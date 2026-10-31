@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB THỰC NGHIỆM: NHÀ TƯ BẢN TẬP SỰ - Môn KTCT Mác - Lênin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Be Vietnam Pro', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#2563eb',
+                            cyan: '#0284c7',
+                            dark: '#0f172a',
+                            cardDark: '#1e293b',
+                            accent: '#38bdf8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Animations & Styles */
+        @keyframes beltMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 0; }
+        }
+        .conveyor-belt {
+            background: repeating-linear-gradient(90deg, #334155, #334155 20px, #475569 20px, #475569 40px);
+            animation: beltMove 2s linear infinite;
+        }
+        @keyframes floatWorker {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .worker-anim {
+            animation: floatWorker 2.5s ease-in-out infinite;
+        }
+        .slider-thumb::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
+            transition: all 0.2s ease;
+        }
+        .slider-thumb::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #2563eb;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-[#f0f7f4] text-slate-800 font-sans min-h-screen p-3 md:p-6 antialiased selection:bg-cyan-500 selection:text-white">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- HEADER BANNER (Giống giao diện thiết kế mẫu) -->
+        <header class="bg-gradient-to-r from-teal-400 via-cyan-500 to-blue-600 rounded-3xl p-6 md:p-8 text-white shadow-lg text-center relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-black pointer-events-none">
+                <i class="fa-solid font-bold fa-industry"></i>
+            </div>
+            <div class="relative z-10 space-y-2">
+                <div class="inline-flex items-center space-x-3 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
+                    <span>🏭 MÔ PHỎNG TƯƠNG TÁC ĐẠI HỌC</span>
+                </div>
+                <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight drop-shadow-sm">
+                    🏢 LAB THỰC NGHIỆM: NHÀ TƯ BẢN TẬP SỰ
+                </h1>
+                <p class="text-cyan-50 text-sm md:text-base font-medium max-w-3xl mx-auto">
+                    Mô phỏng trực quan & Phiếu học tập số - Môn Kinh tế chính trị Mác - Lênin
+                </p>
+            </div>
+        </header>
+
+        <!-- HỆ THỐNG TAB ĐIỀU HƯỚNG -->
+        <nav class="flex flex-wrap justify-center gap-3">
+            <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn px-6 py-3 rounded-2xl font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 bg-blue-600 text-white shadow-md hover:shadow-lg">
+                <i class="fa-solid fa-sliders"></i>
+                <span>TAB 1: MÔ PHỎNG SẢN XUẤT</span>
+            </button>
+            <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn px-6 py-3 rounded-2xl font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 shadow-sm">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>TAB 2: TÍCH LŨY & CẤU TẠO HỮU CƠ (c/v)</span>
+            </button>
+            <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-btn px-6 py-3 rounded-2xl font-bold text-sm md:text-base transition-all duration-300 flex items-center space-x-2 bg-white text-slate-600 hover:bg-slate-100 shadow-sm">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>TAB 3: PHIẾU NHIỆM VỤ & BÀI TẬP</span>
+            </button>
+        </nav>
+
+        <!-- ========================================================================================= -->
+        <!-- TAB 1: MÔ PHỎNG SẢN XUẤT (GIÁ TRỊ THẶNG DƯ) -->
+        <!-- ========================================================================================= -->
+        <main id="tab1" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- BÊN TRÁI: THANH CHUYỂN ĐỘNG SỐ (CONTROLS) -->
+            <section class="lg:col-span-4 bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center space-x-2 text-slate-700 font-bold text-lg pb-3 border-b border-slate-100">
+                        <i class="fa-solid fa-gear text-cyan-600"></i>
+                        <h2>Thanh chuyển động số</h2>
+                    </div>
+
+                    <div class="space-y-5 mt-5">
+                        <!-- Slider 1: Ngày lao động T -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm font-semibold">
+                                <label for="range-T" class="text-slate-600">Độ dài ngày lao động (T):</label>
+                                <span id="val-T" class="bg-cyan-100 text-cyan-700 px-3 py-0.5 rounded-full text-xs font-bold">8h</span>
+                            </div>
+                            <input type="range" id="range-T" min="4" max="16" step="0.5" value="8" oninput="updateSimulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                            <div class="flex justify-between text-[11px] text-slate-400 font-medium">
+                                <span>4 giờ</span>
+                                <span>8 giờ (chuẩn)</span>
+                                <span>16 giờ</span>
+                            </div>
+                        </div>
+
+                        <!-- Slider 2: Tiền lương v -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm font-semibold">
+                                <label for="range-v" class="text-slate-600">Sức lao động / Tiền lương (v):</label>
+                                <span id="val-v" class="bg-emerald-100 text-emerald-700 px-3 py-0.5 rounded-full text-xs font-bold">$40</span>
+                            </div>
+                            <input type="range" id="range-v" min="10" max="100" step="5" value="40" oninput="updateSimulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                            <div class="flex justify-between text-[11px] text-slate-400 font-medium">
+                                <span>$10</span>
+                                <span>$50</span>
+                                <span>$100</span>
+                            </div>
+                        </div>
+
+                        <!-- Slider 3: Tư bản bất biến c -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm font-semibold">
+                                <label for="range-c" class="text-slate-600">Máy móc & Nguyên liệu (c):</label>
+                                <span id="val-c" class="bg-amber-100 text-amber-700 px-3 py-0.5 rounded-full text-xs font-bold">$60</span>
+                            </div>
+                            <input type="range" id="range-c" min="10" max="200" step="5" value="60" oninput="updateSimulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                            <div class="flex justify-between text-[11px] text-slate-400 font-medium">
+                                <span>$10</span>
+                                <span>$100</span>
+                                <span>$200</span>
+                            </div>
+                        </div>
+
+                        <!-- Trình độ công nghệ xã hội -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-600 block">Trình độ công nghệ xã hội (ảnh hưởng t):</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" onclick="setTech('manual')" id="tech-manual" class="tech-btn py-2 text-xs font-bold rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition">
+                                    Thủ công
+                                </button>
+                                <button type="button" onclick="setTech('avg')" id="tech-avg" class="tech-btn py-2 text-xs font-bold rounded-xl border border-cyan-500 bg-cyan-50 text-cyan-700 transition">
+                                    Trung bình
+                                </button>
+                                <button type="button" onclick="setTech('modern')" id="tech-modern" class="tech-btn py-2 text-xs font-bold rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition">
+                                    Hiện đại
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Slider 4: Đột phá công nghệ cá biệt -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-sm font-semibold">
+                                <label for="range-extra" class="text-slate-600">Đột phá công nghệ cá biệt (%):</label>
+                                <span id="val-extra" class="bg-cyan-100 text-cyan-700 px-3 py-0.5 rounded-full text-xs font-bold">0%</span>
+                            </div>
+                            <input type="range" id="range-extra" min="0" max="100" step="10" value="0" oninput="updateSimulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                            <div class="flex justify-between text-[11px] text-slate-400 font-medium">
+                                <span>0% (TB ngành)</span>
+                                <span>50%</span>
+                                <span>100% (Vượt trội)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khung gợi ý học tập -->
+                <div class="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 flex space-x-3 items-start mt-4">
+                    <i class="fa-solid fa-lightbulb text-amber-500 text-base mt-0.5"></i>
+                    <div>
+                        <p class="font-bold mb-1">Mẹo học tập thực nghiệm:</p>
+                        <p class="leading-relaxed">Thay đổi các thanh trượt bên này, đồng thời chuyển qua <strong>Tab 3: Phiếu nhiệm vụ</strong> để đối chiếu kết quả thực hành bài tập nhé!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BÊN PHẢI: KHU VỰC HIỂN THỊ TRỰC QUAN -->
+            <section class="lg:col-span-8 space-y-6">
+
+                <!-- 1. DÂY CHUYỀN SẢN XUẤT TỰ ĐỘNG (Dark Card) -->
+                <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-xl space-y-5 border border-slate-800 relative overflow-hidden">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
+                            <h3 class="font-bold text-sm md:text-base tracking-wide uppercase">DÂY CHUYỀN SẢN XUẤT TỰ ĐỘNG (W = c + v + m)</h3>
+                        </div>
+                        <span class="inline-flex items-center space-x-1.5 bg-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>Hoạt động</span>
+                        </span>
+                    </div>
+
+                    <!-- Mô phỏng chuyển động dây chuyền -->
+                    <div class="relative h-28 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-around px-4">
+                        <div class="flex items-center space-x-3 z-10">
+                            <div class="text-3xl text-slate-400 animate-spin" style="animation-duration: 8s;">
+                                <i class="fa-solid fa-gear"></i>
+                            </div>
+                            <div class="worker-anim bg-slate-800 border border-slate-700 p-2.5 rounded-2xl flex items-center space-x-2 shadow-lg">
+                                <span class="text-2xl">👷</span>
+                                <div class="text-xs">
+                                    <div class="font-bold text-cyan-300">Công nhân</div>
+                                    <div class="text-[10px] text-slate-400" id="anim-labor-rate">Đang tạo giá trị mới</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Icon tư bản c v m chạy dọc -->
+                        <div class="z-10 flex items-center space-x-4">
+                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs px-2.5 py-1 rounded-xl font-bold">c (Vật tư)</span>
+                            <i class="fa-solid fa-arrow-right text-slate-600"></i>
+                            <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs px-2.5 py-1 rounded-xl font-bold">v (Lương)</span>
+                            <i class="fa-solid fa-arrow-right text-slate-600"></i>
+                            <span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs px-2.5 py-1 rounded-xl font-bold">m (Thặng dư)</span>
+                        </div>
+
+                        <!-- Conveyor Track Belt Bottom -->
+                        <div class="absolute bottom-0 left-0 right-0 h-3 conveyor-belt opacity-50"></div>
+                    </div>
+
+                    <!-- Thanh phân bổ thời gian thực nghiệm (t vs t') -->
+                    <div class="space-y-2 pt-2">
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span class="text-cyan-400 flex items-center space-x-1">
+                                <i class="fa-regular fa-hourglass-half"></i>
+                                <span>Thời gian tất yếu (t)</span>
+                            </span>
+                            <span class="text-rose-400 flex items-center space-x-1">
+                                <i class="fa-solid fa-coins"></i>
+                                <span>Thời gian thặng dư (t')</span>
+                            </span>
+                        </div>
+                        <div class="h-8 bg-slate-800 rounded-xl overflow-hidden p-1 flex space-x-1 text-xs font-bold">
+                            <div id="bar-t" class="bg-cyan-500 text-white rounded-lg flex items-center justify-center transition-all duration-300" style="width: 50%;">
+                                t: <span id="disp-t" class="ml-1">4.0h</span>
+                            </div>
+                            <div id="bar-t-prime" class="bg-rose-500 text-white rounded-lg flex items-center justify-center transition-all duration-300" style="width: 50%;">
+                                t': <span id="disp-t-prime" class="ml-1">4.0h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. CƠ CẤU GIÁ TRỊ HÀNG HÓA W = c + v + m -->
+                <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="space-y-1 text-center md:text-left">
+                        <div class="text-xs text-slate-400 font-bold tracking-wider uppercase flex items-center justify-center md:justify-start space-x-2">
+                            <i class="fa-solid fa-chart-pie text-cyan-400"></i>
+                            <span>CƠ CẤU GIÁ TRỊ HÀNG HÓA</span>
+                        </div>
+                        <div class="text-xl md:text-3xl font-extrabold tracking-tight">
+                            W = <span id="math-c" class="text-amber-400">60</span> (c) + 
+                            <span id="math-v" class="text-cyan-400">40</span> (v) + 
+                            <span id="math-m" class="text-rose-400">40</span> (m) = 
+                            <span id="math-W" class="text-emerald-400 text-2xl md:text-4xl">140</span> $
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-400 text-right bg-slate-950 px-4 py-2 rounded-2xl border border-slate-800">
+                        <div>Giá trị mới tạo ra ($v + m$): <span id="disp-v-plus-m" class="text-cyan-300 font-bold">$80</span></div>
+                        <div>Tỷ lệ thặng dư/ngày: <span id="disp-m-ratio" class="text-rose-400 font-bold">50%</span></div>
+                    </div>
+                </div>
+
+                <!-- 3. BẢNG 3 THẺ CHỈ SỐ CHÍNH (METRIC CARDS) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Card m' -->
+                    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 text-center space-y-1 hover:shadow-md transition">
+                        <div class="text-xs text-slate-500 font-bold">Tỷ suất thặng dư (m')</div>
+                        <div id="metric-m-prime" class="text-3xl font-extrabold text-rose-500">100%</div>
+                        <div class="text-[11px] text-slate-400">(m / v) × 100%</div>
+                    </div>
+
+                    <!-- Card p' -->
+                    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 text-center space-y-1 hover:shadow-md transition">
+                        <div class="text-xs text-slate-500 font-bold">Tỷ suất lợi nhuận (p')</div>
+                        <div id="metric-p-prime" class="text-3xl font-extrabold text-emerald-500">40%</div>
+                        <div class="text-[11px] text-slate-400">[m / (c + v)] × 100%</div>
+                    </div>
+
+                    <!-- Card m siêu ngạch -->
+                    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 text-center space-y-1 hover:shadow-md transition">
+                        <div class="text-xs text-slate-500 font-bold">m Siêu ngạch / sp</div>
+                        <div id="metric-m-extra" class="text-3xl font-extrabold text-blue-600">$0.00</div>
+                        <div class="text-[11px] text-slate-400">Do đột phá kỹ thuật cá biệt</div>
+                    </div>
+                </div>
+
+                <!-- 4. KHUNG GIẢI THÍCH LÝ THUYẾT ĐỘNG KHÔI PHỤC KẾT NỐI -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-3">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-graduation-cap text-cyan-600"></i>
+                        <span>Phân tích hình thức Giá trị thặng dư đang áp dụng:</span>
+                    </h4>
+                    <div id="theory-insight" class="text-xs leading-relaxed space-y-2 text-slate-600">
+                        <!-- Nạp động qua JS -->
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <!-- ========================================================================================= -->
+        <!-- TAB 2: TÍCH LŨY TƯ BẢN & CẤU TẠO HỮU CƠ (c/v) -->
+        <!-- ========================================================================================= -->
+        <main id="tab2" class="tab-content hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Điều khiển tích lũy -->
+            <section class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-6">
+                <div class="flex items-center space-x-2 text-slate-700 font-bold text-lg pb-3 border-b border-slate-100">
+                    <i class="fa-solid fa-sliders text-cyan-600"></i>
+                    <h2>Thông số Tích lũy tư bản</h2>
+                </div>
+
+                <div class="space-y-5">
+                    <!-- Tỷ lệ tích lũy k% -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm font-semibold">
+                            <label for="range-k" class="text-slate-600">Tỷ lệ dành cho Tích lũy (k%):</label>
+                            <span id="val-k" class="bg-cyan-100 text-cyan-700 px-3 py-0.5 rounded-full text-xs font-bold">60%</span>
+                        </div>
+                        <input type="range" id="range-k" min="0" max="100" step="10" value="60" oninput="updateAccumulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                        <p class="text-[11px] text-slate-400">Tỷ lệ giá trị thặng dư m biến thành tư bản phụ thêm.</p>
+                    </div>
+
+                    <!-- Thay đổi Cấu tạo hữu cơ c/v -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm font-semibold">
+                            <label for="range-cv" class="text-slate-600">Cấu tạo hữu cơ mới (c/v):</label>
+                            <span id="val-cv" class="bg-purple-100 text-purple-700 px-3 py-0.5 rounded-full text-xs font-bold">4 / 1</span>
+                        </div>
+                        <input type="range" id="range-cv" min="1" max="10" step="1" value="4" oninput="updateAccumulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                        <p class="text-[11px] text-slate-400">Tỷ lệ giữa tư bản bất biến (c) và tư bản khả biến (v).</p>
+                    </div>
+
+                    <!-- Chu kỳ tích lũy -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm font-semibold">
+                            <label for="range-years" class="text-slate-600">Số chu kỳ tái sản xuất (Năm):</label>
+                            <span id="val-years" class="bg-amber-100 text-amber-700 px-3 py-0.5 rounded-full text-xs font-bold">3 Năm</span>
+                        </div>
+                        <input type="range" id="range-years" min="1" max="10" step="1" value="3" oninput="updateAccumulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                    </div>
+                </div>
+
+                <!-- Lý thuyết quy luật tích lũy -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-2 text-slate-700">
+                    <div class="font-bold text-slate-900 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-book-bookmark text-blue-600"></i>
+                        <span>Quy luật địa vị giai cấp worker:</span>
+                    </div>
+                    <p class="leading-relaxed">Khi cấu tạo hữu cơ $c/v$ tăng lên do tiến bộ kỹ thuật, tỷ trọng cầu về sức lao động $v$ giảm tương đối so với tổng tư bản $K$. Điều này tạo ra <strong>đội quân lao động dự bị (thất nghiệp)</strong>.</p>
+                </div>
+            </section>
+
+            <!-- Hiển thị kết quả tích lũy -->
+            <section class="lg:col-span-7 space-y-6">
+
+                <!-- So sánh Quy mô tư bản ban đầu & Sau tích lũy -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-5">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-column text-cyan-600"></i>
+                        <span>TĂNG QUY MÔ TƯ BẢN & BIẾN ĐỔI CẤU TẠO HỮU CƠ</span>
+                    </h3>
+
+                    <!-- Thanh so sánh Quy mô tư bản -->
+                    <div class="space-y-4 text-xs font-semibold">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-slate-600">Tư bản ban đầu ($K_0$):</span>
+                                <span id="acc-k0-text" class="text-slate-900 font-bold">$100</span>
+                            </div>
+                            <div class="h-6 bg-slate-100 rounded-xl overflow-hidden flex">
+                                <div id="acc-c0-bar" class="bg-amber-400 text-white flex items-center justify-center text-[10px]" style="width:60%">c: $60</div>
+                                <div id="acc-v0-bar" class="bg-cyan-500 text-white flex items-center justify-center text-[10px]" style="width:40%">v: $40</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-slate-600">Tư bản sau tích lũy ($K_{mới}$):</span>
+                                <span id="acc-knew-text" class="text-cyan-600 font-bold">$172</span>
+                            </div>
+                            <div class="h-6 bg-slate-100 rounded-xl overflow-hidden flex">
+                                <div id="acc-cnew-bar" class="bg-amber-500 text-white flex items-center justify-center text-[10px]" style="width:80%">c: $137.6</div>
+                                <div id="acc-vnew-bar" class="bg-cyan-600 text-white flex items-center justify-center text-[10px]" style="width:20%">v: $34.4</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2 Chỉ số tác động -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="bg-rose-50 border border-rose-100 p-4 rounded-2xl text-center space-y-1">
+                            <div class="text-xs text-rose-600 font-bold">Nhu cầu Sức lao động (v)</div>
+                            <div id="acc-labor-demand" class="text-2xl font-extrabold text-rose-700">Giảm -14%</div>
+                            <div class="text-[10px] text-rose-500">Tỷ trọng v trên tổng tư bản giảm</div>
+                        </div>
+
+                        <div class="bg-purple-50 border border-purple-100 p-4 rounded-2xl text-center space-y-1">
+                            <div class="text-xs text-purple-600 font-bold">Tỷ suất lợi nhuận mới (p')</div>
+                            <div id="acc-new-p-prime" class="text-2xl font-extrabold text-purple-700">23.2%</div>
+                            <div class="text-[10px] text-purple-500">Xu hướng tỷ suất lợi nhuận giảm dần</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Đồ thị trực quan về Đội quân thất nghiệp dự bị -->
+                <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-xl space-y-4 border border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-sm tracking-wide text-cyan-400 flex items-center space-x-2">
+                            <i class="fa-solid fa-users-slash"></i>
+                            <span>TÁC ĐỘNG TỚI VIỆC LÀM & ĐỘI QUÂN DỰ BỊ</span>
+                        </h4>
+                        <span id="acc-unemploy-badge" class="text-xs bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-0.5 rounded-full font-bold">Áp lực thất nghiệp tăng</span>
+                    </div>
+
+                    <div id="acc-summary-desc" class="text-xs text-slate-300 leading-relaxed">
+                        <!-- Cập nhật qua JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ========================================================================================= -->
+        <!-- TAB 3: PHIẾU NHIỆM VỤ & BÀI TẬP (WORKSHEET & QUIZZES) -->
+        <!-- ========================================================================================= -->
+        <main id="tab3" class="tab-content hidden space-y-6">
+            
+            <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-clipboard-check text-cyan-600"></i>
+                        <span>PHIẾU NHIỆM VỤ THỰC HÀNH & BÀI TẬP CỦNG CỐ</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Hoàn thành bài tập tính toán và câu hỏi trắc nghiệm để kiểm tra mức độ hiểu bài của bạn.</p>
+                </div>
+                <div id="score-badge" class="hidden bg-emerald-100 border border-emerald-300 text-emerald-800 px-5 py-2 rounded-2xl text-center font-bold">
+                    <div class="text-[10px] uppercase">Kết quả học tập</div>
+                    <div class="text-xl" id="final-score">0 / 100 điểm</div>
+                </div>
+            </div>
+
+            <form id="quiz-form" onsubmit="gradeQuiz(event)" class="space-y-6">
+
+                <!-- PHẦN 1: BÀI TẬP TÍNH TOÁN THỰC THÁI -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-6">
+                    <h3 class="font-bold text-slate-800 text-base border-b border-slate-100 pb-3 flex items-center space-x-2">
+                        <span class="bg-cyan-600 text-white w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">1</span>
+                        <span>BÀI TẬP TÍNH TOÁN THỰC HÀNH</span>
+                    </h3>
+
+                    <!-- Bài 1 -->
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-sm">
+                        <p class="font-semibold text-slate-800">📌 Bài 1: Cho ngày lao động $T = 8$ giờ, thời gian lao động tất yếu $t = 4$ giờ, tiền lương $v = \$50$, tư bản bất biến $c = \$100$. Hãy tính:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                            <div>
+                                <label class="block font-medium text-slate-600 mb-1">Giá trị thặng dư (m):</label>
+                                <input type="number" id="ans-b1-m" placeholder="Ví dụ: 50" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-600 mb-1">Tổng giá trị Hàng hóa (W):</label>
+                                <input type="number" id="ans-b1-w" placeholder="Ví dụ: 200" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-600 mb-1">Tỷ suất thặng dư (m'%):</label>
+                                <input type="number" id="ans-b1-mprime" placeholder="Ví dụ: 100" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-600 mb-1">Tỷ suất lợi nhuận (p'%):</label>
+                                <input type="number" step="0.1" id="ans-b1-pprime" placeholder="Ví dụ: 33.3" class="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-cyan-500 outline-none">
+                            </div>
+                        </div>
+                        <div id="fb-b1" class="text-xs font-semibold hidden p-2 rounded-lg"></div>
+                    </div>
+
+                    <!-- Bài 2 -->
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-sm">
+                        <p class="font-semibold text-slate-800">📌 Bài 2: Nhà tư bản kéo dài ngày lao động từ 8 giờ lên 10 giờ trong khi thời gian lao động tất yếu ($t = 4h$) và tiền lương ($v = \$40$) không đổi. Đây là phương pháp sản xuất giá trị thặng dư gì?</p>
+                        <div class="space-y-2 text-xs">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="q2-method" value="tuyetdoi" class="text-cyan-600 focus:ring-cyan-500">
+                                <span>Sản xuất Giá trị thặng dư Tuyệt đối</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="q2-method" value="tuongdoi" class="text-cyan-600 focus:ring-cyan-500">
+                                <span>Sản xuất Giá trị thặng dư Tương đối</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="q2-method" value="sieungach" class="text-cyan-600 focus:ring-cyan-500">
+                                <span>Sản xuất Giá trị thặng dư Siêu ngạch</span>
+                            </label>
+                        </div>
+                        <div id="fb-b2" class="text-xs font-semibold hidden p-2 rounded-lg"></div>
+                    </div>
+                </div>
+
+                <!-- PHẦN 2: TRẮC NGHIỆM LÝ THUYẾT -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 space-y-6">
+                    <h3 class="font-bold text-slate-800 text-base border-b border-slate-100 pb-3 flex items-center space-x-2">
+                        <span class="bg-cyan-600 text-white w-6 h-6 rounded-full inline-flex items-center justify-center text-xs">2</span>
+                        <span>CÂU HỎI TRẮC NGHIỆM CỦNG CỐ</span>
+                    </h3>
+
+                    <div class="space-y-5 text-sm">
+                        <!-- Q1 -->
+                        <div class="space-y-2">
+                            <p class="font-semibold text-slate-800">Câu 1: Trong công thức giá trị hàng hóa $W = c + v + m$, bộ phận tư bản bất biến ($c$) đại diện cho điều gì?</p>
+                            <div class="space-y-1.5 text-xs">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q1" value="A" class="text-cyan-600">
+                                    <span>A. Tiền lương trả cho công nhân làm thuê</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q1" value="B" class="text-cyan-600">
+                                    <span>B. Giá trị của máy móc, thiết bị, nhà xưởng và nguyên vật liệu đã hao phí</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q1" value="C" class="text-cyan-600">
+                                    <span>C. Lợi nhuận siêu ngạch của nhà tư bản</span>
+                                </label>
+                            </div>
+                            <div id="fb-q1" class="text-xs font-semibold hidden p-2 rounded-lg"></div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="space-y-2">
+                            <p class="font-semibold text-slate-800">Câu 2: Bản chất của Phương pháp sản xuất giá trị thặng dư tương đối là gì?</p>
+                            <div class="space-y-1.5 text-xs">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q2" value="A" class="text-cyan-600">
+                                    <span>A. Kéo dài ngày lao động vượt quá thời gian tất yếu</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q2" value="B" class="text-cyan-600">
+                                    <span>B. Rút ngắn thời gian lao động tất yếu nhờ tăng năng suất lao động xã hội, giữ nguyên độ dài ngày lao động</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q2" value="C" class="text-cyan-600">
+                                    <span>C. Cắt giảm tiền lương của công nhân xuống dưới giá trị sức lao động</span>
+                                </label>
+                            </div>
+                            <div id="fb-q2" class="text-xs font-semibold hidden p-2 rounded-lg"></div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="space-y-2">
+                            <p class="font-semibold text-slate-800">Câu 3: Cấu tạo hữu cơ của tư bản (ký hiệu $c/v$) phản ánh điều gì?</p>
+                            <div class="space-y-1.5 text-xs">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q3" value="A" class="text-cyan-600">
+                                    <span>A. Cấu tạo kỹ thuật của tư bản do cấu tạo giá trị quyết định và phản ánh sự thay đổi của cấu tạo kỹ thuật</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q3" value="B" class="text-cyan-600">
+                                    <span>B. Tỷ lệ phân chia giữa tiền lương công nhân và lợi nhuận tư bản</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="q3" value="C" class="text-cyan-600">
+                                    <span>C. Tỷ lệ giữa thời gian tất yếu và thời gian thặng dư</span>
+                                </label>
+                            </div>
+                            <div id="fb-q3" class="text-xs font-semibold hidden p-2 rounded-lg"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NÚT NỘP BÀI -->
+                <div class="text-center pt-2">
+                    <button type="submit" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]">
+                        <i class="fa-solid fa-paper-plane mr-2"></i>
+                        <span>NỘP BÀI & CHẤM ĐIỂM TỰ ĐỘNG</span>
+                    </button>
+                </div>
+
+            </form>
+        </main>
+
+    </div>
+
+    <!-- SCRIPT CHÍNH XỬ LÝ MÔ PHỎNG VÀ TÍNH TOÁN (VANILLA JS) -->
+    <script>
+        // TRẠNG THÁI TOÀN CỤC MÔ PHỎNG TAB 1
+        let state = {
+            T: 8,          // Độ dài ngày lao động (h)
+            v: 40,         // Tiền lương ($)
+            c: 60,         // Tư bản bất biến ($)
+            tech: 'avg',   // 'manual', 'avg', 'modern'
+            extraTech: 0   // % Đột phá cá biệt
+        };
+
+        // Khi load trang
+        window.onload = function() {
+            updateSimulation();
+            updateAccumulation();
+        };
+
+        // CHUYỂN ĐỔI TAB
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+                btn.classList.add('bg-white', 'text-slate-600');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('bg-white', 'text-slate-600');
+            activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+        }
+
+        // ĐẶT TRÌNH ĐỘ CÔNG NGHỆ XÃ HỘI
+        function setTech(level) {
+            state.tech = level;
+            document.querySelectorAll('.tech-btn').forEach(b => {
+                b.classList.remove('border-cyan-500', 'bg-cyan-50', 'text-cyan-700');
+                b.classList.add('border-slate-200', 'text-slate-600');
+            });
+            const activeB = document.getElementById('tech-' + level);
+            activeB.classList.remove('border-slate-200', 'text-slate-600');
+            activeB.classList.add('border-cyan-500', 'bg-cyan-50', 'text-cyan-700');
+
+            updateSimulation();
+        }
+
+        // CẬP NHẬT MÔ PHỎNG TAB 1
+        function updateSimulation() {
+            state.T = parseFloat(document.getElementById('range-T').value);
+            state.v = parseFloat(document.getElementById('range-v').value);
+            state.c = parseFloat(document.getElementById('range-c').value);
+            state.extraTech = parseFloat(document.getElementById('range-extra').value);
+
+            // Cập nhật nhãn slider
+            document.getElementById('val-T').innerText = state.T + 'h';
+            document.getElementById('val-v').innerText = '$' + state.v;
+            document.getElementById('val-c').innerText = '$' + state.c;
+            document.getElementById('val-extra').innerText = state.extraTech + '%';
+
+            // Tính thời gian tất yếu base theo trình độ công nghệ
+            let base_t = 4.0;
+            if (state.tech === 'manual') base_t = 5.0;
+            if (state.tech === 'modern') base_t = 2.5;
+
+            // Đảm bảo t luôn nhỏ hơn T
+            let t = Math.min(base_t, state.T - 0.5);
+            if (t < 1) t = 1;
+            let t_prime = state.T - t;
+
+            // Tính toán giá trị mới tạo ra và m
+            // V_h là giá trị tạo ra trong 1 giờ lao động = v / t
+            let v_per_hour = state.v / t;
+            let m_base = t_prime * v_per_hour;
+
+            // Thặng dư siêu ngạch do đột phá cá biệt
+            let m_extra = (state.extraTech / 100) * (state.v * 0.5);
+
+            let m_total = m_base + m_extra;
+            let W = state.c + state.v + m_total;
+            let m_prime = (m_total / state.v) * 100;
+            let p_prime = (m_total / (state.c + state.v)) * 100;
+
+            // Cập nhật Giao diện
+            document.getElementById('disp-t').innerText = t.toFixed(1) + 'h';
+            document.getElementById('disp-t-prime').innerText = t_prime.toFixed(1) + 'h';
+
+            // Phân bổ % thanh t & t'
+            let pct_t = (t / state.T) * 100;
+            let pct_t_prime = 100 - pct_t;
+            document.getElementById('bar-t').style.width = pct_t + '%';
+            document.getElementById('bar-t-prime').style.width = pct_t_prime + '%';
+
+            // Cơ cấu giá trị W
+            document.getElementById('math-c').innerText = state.c.toFixed(0);
+            document.getElementById('math-v').innerText = state.v.toFixed(0);
+            document.getElementById('math-m').innerText = m_total.toFixed(1);
+            document.getElementById('math-W').innerText = W.toFixed(1);
+            document.getElementById('disp-v-plus-m').innerText = '$' + (state.v + m_total).toFixed(1);
+            document.getElementById('disp-m-ratio').innerText = m_prime.toFixed(0) + '%';
+
+            // Thẻ Metric
+            document.getElementById('metric-m-prime').innerText = m_prime.toFixed(0) + '%';
+            document.getElementById('metric-p-prime').innerText = p_prime.toFixed(1) + '%';
+            document.getElementById('metric-m-extra').innerText = '$' + m_extra.toFixed(2);
+
+            // Cập nhật giải thích lý thuyết động
+            let theoryBox = document.getElementById('theory-insight');
+            let descHtml = '';
+
+            if (state.T > 8) {
+                descHtml += `<p class="text-rose-600 font-semibold">🔴 <strong>Giá trị thặng dư Tuyệt đối:</strong> Đang áp dụng mạnh mẽ do nhà tư bản kéo dài ngày lao động lên ${state.T}h (vượt mức tiêu chuẩn 8h).</p>`;
+            }
+            if (state.tech === 'modern' || t < 4) {
+                descHtml += `<p class="text-cyan-600 font-semibold">🔵 <strong>Giá trị thặng dư Tương đối:</strong> Trình độ công nghệ cao giúp rút ngắn thời gian tất yếu xuống còn ${t.toFixed(1)}h, mở rộng thời gian thặng dư.</p>`;
+            }
+            if (state.extraTech > 0) {
+                descHtml += `<p class="text-amber-600 font-semibold">⭐ <strong>Giá trị thặng dư Siêu ngạch:</strong> Nhà tư bản thu thêm $${m_extra.toFixed(2)} nhờ có đột phá kỹ thuật cá biệt (${state.extraTech}%) cao hơn mức trung bình toàn ngành.</p>`;
+            }
+            if (descHtml === '') {
+                descHtml = `<p class="text-slate-500">Đang ở điều kiện sản xuất tiêu chuẩn (Ngày 8h, công nghệ trung bình). Tỷ suất thặng dư đạt mức cơ sở ${m_prime.toFixed(0)}%.</p>`;
+            }
+            theoryBox.innerHTML = descHtml;
+        }
+
+        // CẬP NHẬT TÍCH LŨY TAB 2
+        function updateAccumulation() {
+            let k = parseFloat(document.getElementById('range-k').value);
+            let cv_ratio = parseFloat(document.getElementById('range-cv').value);
+            let years = parseFloat(document.getElementById('range-years').value);
+
+            document.getElementById('val-k').innerText = k + '%';
+            document.getElementById('val-cv').innerText = cv_ratio + ' / 1';
+            document.getElementById('val-years').innerText = years + ' Năm';
+
+            // Lấy dữ liệu tư bản ban đầu từ Tab 1
+            let K0 = state.c + state.v;
+            let m_base = state.v; // m cơ sở xấp xỉ
+
+            // Tích lũy dồn qua các năm
+            let total_accumulated_m = m_base * (k / 100) * years;
+            let K_new = K0 + total_accumulated_m;
+
+            // Phân bổ K_new theo cấu tạo hữu cơ mới (cv_ratio : 1)
+            let v_new = K_new / (cv_ratio + 1);
+            let c_new = K_new - v_new;
+
+            // Tỷ lệ %
+            let pct_c0 = (state.c / K0) * 100;
+            let pct_v0 = 100 - pct_c0;
+
+            let pct_cnew = (c_new / K_new) * 100;
+            let pct_vnew = 100 - pct_cnew;
+
+            // Cập nhật giao diện
+            document.getElementById('acc-k0-text').innerText = '$' + K0.toFixed(0);
+            document.getElementById('acc-c0-bar').style.width = pct_c0 + '%';
+            document.getElementById('acc-c0-bar').innerText = 'c: $' + state.c.toFixed(0);
+            document.getElementById('acc-v0-bar').style.width = pct_v0 + '%';
+            document.getElementById('acc-v0-bar').innerText = 'v: $' + state.v.toFixed(0);
+
+            document.getElementById('acc-knew-text').innerText = '$' + K_new.toFixed(1);
+            document.getElementById('acc-cnew-bar').style.width = pct_cnew + '%';
+            document.getElementById('acc-cnew-bar').innerText = 'c: $' + c_new.toFixed(1);
+            document.getElementById('acc-vnew-bar').style.width = pct_vnew + '%';
+            document.getElementById('acc-vnew-bar').innerText = 'v: $' + v_new.toFixed(1);
+
+            // Nhu cầu sức lao động tương đối
+            let labor_pct_change = ((pct_vnew - pct_v0) / pct_v0) * 100;
+            let laborElem = document.getElementById('acc-labor-demand');
+            if (labor_pct_change <= 0) {
+                laborElem.innerText = `Giảm ${labor_pct_change.toFixed(1)}%`;
+                laborElem.className = "text-2xl font-extrabold text-rose-600";
+            } else {
+                laborElem.innerText = `Tăng +${labor_pct_change.toFixed(1)}%`;
+                laborElem.className = "text-2xl font-extrabold text-emerald-600";
+            }
+
+            // Tỷ suất lợi nhuận mới p' = m / (c + v)
+            let new_p_prime = (m_base / K_new) * 100;
+            document.getElementById('acc-new-p-prime').innerText = new_p_prime.toFixed(1) + '%';
+
+            // Tóm tắt tác động xã hội
+            let summaryElem = document.getElementById('acc-summary-desc');
+            summaryElem.innerHTML = `
+                Tư bản tích lũy thêm <strong>$${total_accumulated_m.toFixed(1)}</strong> sau ${years} năm. 
+                Do đẩy mạnh máy móc tự động hóa (c/v = ${cv_ratio}/1), tỷ trọng chi cho tiền lương công nhân giảm từ 
+                <strong>${pct_v0.toFixed(0)}%</strong> xuống còn <strong>${pct_vnew.toFixed(0)}%</strong>. 
+                Điều này khẳng định quy luật tích lũy tư bản: <i>"Sự giàu có tăng lên ở một cực đồng nghĩa với việc tạo ra đội quân thất nghiệp dự bị ở cực đối diện."</i>
+            `;
+        }
+
+        // CHẤM ĐIỂM TAB 3 PHIẾU BÀI TẬP
+        function gradeQuiz(event) {
+            event.preventDefault();
+            let score = 0;
+
+            // Chấm Bài 1 (40 điểm)
+            let b1_m = parseFloat(document.getElementById('ans-b1-m').value);
+            let b1_w = parseFloat(document.getElementById('ans-b1-w').value);
+            let b1_mprime = parseFloat(document.getElementById('ans-b1-mprime').value);
+            let b1_pprime = parseFloat(document.getElementById('ans-b1-pprime').value);
+
+            let fb1 = document.getElementById('fb-b1');
+            fb1.classList.remove('hidden');
+
+            if (b1_m === 50 && b1_w === 200 && b1_mprime === 100 && (b1_pprime >= 33 && b1_pprime <= 33.4)) {
+                score += 40;
+                fb1.className = "text-xs font-semibold p-2.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300";
+                fb1.innerHTML = "✅ Chính xác hoàn toàn! (m = 50$, W = 200$, m' = 100%, p' = 33.3%)";
+            } else {
+                fb1.className = "text-xs font-semibold p-2.5 rounded-xl bg-rose-100 text-rose-800 border border-rose-300";
+                fb1.innerHTML = "❌ Chưa chính xác. Đáp án đúng: m = $50, W = $200, m' = 100%, p' = 33.3%.";
+            }
+
+            // Chấm Bài 2 (20 điểm)
+            let b2_val = document.querySelector('input[name="q2-method"]:checked')?.value;
+            let fb2 = document.getElementById('fb-b2');
+            fb2.classList.remove('hidden');
+
+            if (b2_val === 'tuyetdoi') {
+                score += 20;
+                fb2.className = "text-xs font-semibold p-2.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300";
+                fb2.innerHTML = "✅ Chính xác! Kéo dài ngày lao động vượt quá thời gian tất yếu chính là phương pháp Thặng dư Tuyệt đối.";
+            } else {
+                fb2.className = "text-xs font-semibold p-2.5 rounded-xl bg-rose-100 text-rose-800 border border-rose-300";
+                fb2.innerHTML = "❌ Sai rồi. Đáp án đúng là: Sản xuất Giá trị thặng dư Tuyệt đối.";
+            }
+
+            // Chấm Trắc nghiệm (40 điểm: 3 câu)
+            let q1 = document.querySelector('input[name="q1"]:checked')?.value;
+            let q2 = document.querySelector('input[name="q2"]:checked')?.value;
+            let q3 = document.querySelector('input[name="q3"]:checked')?.value;
+
+            // Q1 (13.3 đ)
+            let fbq1 = document.getElementById('fb-q1');
+            fbq1.classList.remove('hidden');
+            if (q1 === 'B') {
+                score += 13.3;
+                fbq1.className = "text-xs font-semibold p-2 rounded-lg bg-emerald-100 text-emerald-800";
+                fbq1.innerText = "✅ Đúng (c là tư bản bất biến: máy móc, thiết bị, vật tư).";
+            } else {
+                fbq1.className = "text-xs font-semibold p-2 rounded-lg bg-rose-100 text-rose-800";
+                fbq1.innerText = "❌ Sai. Đáp án đúng là B.";
+            }
+
+            // Q2 (13.3 đ)
+            let fbq2 = document.getElementById('fb-q2');
+            fbq2.classList.remove('hidden');
+            if (q2 === 'B') {
+                score += 13.3;
+                fbq2.className = "text-xs font-semibold p-2 rounded-lg bg-emerald-100 text-emerald-800";
+                fbq2.innerText = "✅ Đúng (Rút ngắn thời gian tất yếu nhờ tăng NSLĐ xã hội).";
+            } else {
+                fbq2.className = "text-xs font-semibold p-2 rounded-lg bg-rose-100 text-rose-800";
+                fbq2.innerText = "❌ Sai. Đáp án đúng là B.";
+            }
+
+            // Q3 (13.4 đ)
+            let fbq3 = document.getElementById('fb-q3');
+            fbq3.classList.remove('hidden');
+            if (q3 === 'A') {
+                score += 13.4;
+                fbq3.className = "text-xs font-semibold p-2 rounded-lg bg-emerald-100 text-emerald-800";
+                fbq3.innerText = "✅ Đúng (Cấu tạo hữu cơ c/v phản ánh cấu tạo kỹ thuật do cấu tạo giá trị quyết định).";
+            } else {
+                fbq3.className = "text-xs font-semibold p-2 rounded-lg bg-rose-100 text-rose-800";
+                fbq3.innerText = "❌ Sai. Đáp án đúng là A.";
+            }
+
+            // Hiển thị tổng điểm
+            let finalScore = Math.round(score);
+            let scoreBadge = document.getElementById('score-badge');
+            scoreBadge.classList.remove('hidden');
+            document.getElementById('final-score').innerText = finalScore + " / 100 điểm";
+
+            // Cuộn mượt tới điểm số
+            scoreBadge.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
